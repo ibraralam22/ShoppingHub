@@ -1,5 +1,6 @@
 const { response } = require('express');
 const productDetails = require('../models/productSchema');
+const categoryDetails = require('../models/categorySchema');
 const CloudinaryService = require('../cloudinary/cloudinary');
 const fs = require('fs');
 const util = require('util');
@@ -12,10 +13,6 @@ class Product {
       const userId = req.loggedData.id;
 
       const { product_name, product_description, price, categoryId } = req.body;
-      console.log(
-        '🚀 ~ file: productController.js:15 ~ Task ~ createProduct= ~ body:',
-        req.body
-      );
 
       if (!product_name) {
         throw {
@@ -38,8 +35,18 @@ class Product {
         };
       }
 
+      const category = await categoryDetails.findById(categoryId); 
+      
+      if (!category) {
+        throw {
+          message: 'Not found Category ID',
+        };
+      }
+
       const files = req.files;
-      const filePaths = files.map((file) => file.path);
+      if (!files || files.length === 0) {
+        throw new Error('Please upload a Image');
+      }
 
       const cloudFile = await CloudinaryService.uploadImage(files[0]);
       await unlinkFile(files[0].path);
@@ -50,7 +57,7 @@ class Product {
         product_description,
         price,
         imageUrl: cloudFile.secure_url,
-        categoryId,
+        categoryId: category._id,
       });
       res.send({
         status: true,
@@ -58,10 +65,6 @@ class Product {
         message: 'Successfully Created Product',
       });
     } catch (error) {
-      console.log(
-        '🚀 ~ file: productController.js:58 ~ Task ~ createProduct= ~ error:',
-        error
-      );
       res.send({
         status: false,
         response: error.message,
@@ -72,8 +75,8 @@ class Product {
   getProducts = async (req, res) => {
     try {
       const response = await productDetails
-        .findById({ product_id })
-        .populate('userId');
+        .find({ isDeleted: false })
+        .populate();
       res.send({
         status: true,
         response: response,
@@ -87,30 +90,30 @@ class Product {
     }
   };
 
-  updateTask = async (req, res) => {
+  updateProduct = async (req, res) => {
     try {
       const userId = req.loggedData.id;
-      const taskId = req.body.id;
-      const taskTitle = req.body.taskTitle;
-      const taskCategory = req.body.taskCategory;
-      const taskDescription = req.body.taskDescription;
+      const productId = req.body.id;
+      const product_name = req.body.product_name;
+      const product_description = req.body.product_description;
+      const price = req.body.price;
 
       // Find the task by task ID and user ID
-      const taskToUpdate = await productDetails.findOneAndUpdate({
-        taskId: taskId,
+      const productToUpdate = await productDetails.findOneAndUpdate({
+        productId: productId,
         userId: userId,
       });
 
       // Update the task details
-      taskToUpdate.taskTitle = taskTitle;
-      taskToUpdate.taskCategory = taskCategory;
-      taskToUpdate.taskDescription = taskDescription;
+      productToUpdate.product_name = product_name;
+      productToUpdate.product_description = product_description;
+      productToUpdate.price = price;
 
-      const updatedTask = await taskToUpdate.save();
+      const updatedProduct = await productToUpdate.save();
       res.send({
         status: true,
-        response: updatedTask,
-        message: 'Successfully updated the Task',
+        response: updatedProduct,
+        message: 'Successfully Updated the Product',
       });
     } catch (error) {
       res.send({
@@ -120,24 +123,7 @@ class Product {
     }
   };
 
-  deleteTask = async (req, res) => {
-    try {
-      const id = req.query.id;
-      const response = await productDetails.deleteMany({ _id: id });
-      res.send({
-        status: true,
-        response: response,
-        message: 'Successfully deleted the Product',
-      });
-    } catch (error) {
-      res.send({
-        status: false,
-        response: error.message,
-      });
-    }
-  };
-
-  softDeleteTask = async (req, res) => {
+  softDeleteProduct = async (req, res) => {
     try {
       const id = req.query.id;
       const response = await productDetails.updateOne(
@@ -147,7 +133,7 @@ class Product {
       res.send({
         status: true,
         response: response,
-        message: 'Successfully soft-deleted the Product',
+        message: 'Successfully Deleted the Product',
       });
     } catch (error) {
       res.send({

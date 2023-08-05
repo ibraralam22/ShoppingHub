@@ -9,13 +9,9 @@ const { Auth_ACCESS } = require('../middleware/auth');
 
 // # Products Routes
 router.post('/products/create', Auth_ACCESS, upload.array('files'), Product.createProduct);
-// router.get('/', Auth_ACCESS, Task.getTasks);
-// router.get('/tasks/', Auth_ACCESS, Task.getUserTasks);
-// router.get('/tasks/all', Auth_ACCESS, Task.getTasks);
-// // router.get("/tasks/:taskCategory", Task.getTasksByCategory);
-// router.patch('/tasks/:id', Auth_ACCESS, Task.updateTask);
-// router.delete('/tasks/:id', Auth_ACCESS, Task.deleteTask);
-// router.delete('/task/:id', Auth_ACCESS, Task.softDeleteTask);
+router.get('/products', Auth_ACCESS, Product.getProducts);
+router.patch('/products/:id', Auth_ACCESS, Product.updateProduct);
+router.delete('/products/:id', Auth_ACCESS, Product.softDeleteProduct);
 
 // # Category Routes
 router.post('/categories/create', Auth_ACCESS, Category.createCategory);
