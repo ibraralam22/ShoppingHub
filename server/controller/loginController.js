@@ -28,6 +28,7 @@ class Login {
           age: findCredentials[0].age,
           gender: findCredentials[0].gender,
           email: findCredentials[0].email,
+          userRole: findCredentials[0].userRole,
         };
 
         const access_token = jwt.sign(userCookieData, JWT_AUTH_TOKEN, {
@@ -48,6 +49,7 @@ class Login {
               age: findCredentials[0].age,
               gender: findCredentials[0].gender,
               email: findCredentials[0].email,
+              userRole: findCredentials[0].userRole,
               access_token: access_token,
               login_token: login_token,
             },

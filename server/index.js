@@ -6,14 +6,14 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 
 const DBConnection = require('./db/db.connection');
-// const taskRouter = require('./routes/router');
+const hubRouter = require('./routes/router');
 
 // Cloudinary
 
 DBConnection();
 app.use(express.json());
 
-// app.use(taskRouter);
+app.use(hubRouter);
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());

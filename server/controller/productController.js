@@ -6,12 +6,16 @@ const util = require('util');
 const unlinkFile = util.promisify(fs.unlink);
 const loggedData = require('../middleware/auth');
 
-class Task {
+class Product {
   createProduct = async (req, res) => {
     try {
       const userId = req.loggedData.id;
 
-      const { product_name, product_description, price } = req.body;
+      const { product_name, product_description, price, categoryId } = req.body;
+      console.log(
+        '🚀 ~ file: productController.js:15 ~ Task ~ createProduct= ~ body:',
+        req.body
+      );
 
       if (!product_name) {
         throw {
@@ -28,12 +32,18 @@ class Task {
           message: 'Please enter a Product Price',
         };
       }
+      if (!categoryId) {
+        throw {
+          message: 'Please enter a valid Category ID',
+        };
+      }
 
       const files = req.files;
       const filePaths = files.map((file) => file.path);
 
       const cloudFile = await CloudinaryService.uploadImage(files[0]);
       await unlinkFile(files[0].path);
+
       const response = await productDetails.create({
         userId,
         product_name,
@@ -48,6 +58,10 @@ class Task {
         message: 'Successfully Created Product',
       });
     } catch (error) {
+      console.log(
+        '🚀 ~ file: productController.js:58 ~ Task ~ createProduct= ~ error:',
+        error
+      );
       res.send({
         status: false,
         response: error.message,
@@ -55,34 +69,15 @@ class Task {
     }
   };
 
-  getTasks = async (req, res) => {
+  getProducts = async (req, res) => {
     try {
       const response = await productDetails
-        .find({ isDeleted: false })
+        .findById({ product_id })
         .populate('userId');
       res.send({
         status: true,
         response: response,
-        message: 'Successfully get all Tasks',
-      });
-    } catch (error) {
-      res.send({
-        status: false,
-        response: error.message,
-      });
-    }
-  };
-
-  getUserTasks = async (req, res) => {
-    try {
-      const userId = req.loggedData.id;
-      const response = await productDetails
-        .find({ userId: userId, isDeleted: false })
-        .populate('userId');
-      res.send({
-        status: true,
-        response: response,
-        message: 'Successfully get all Tasks',
+        message: 'Successfully get all Products',
       });
     } catch (error) {
       res.send({
@@ -163,4 +158,4 @@ class Task {
   };
 }
 
-module.exports = new Task();
+module.exports = new Product();

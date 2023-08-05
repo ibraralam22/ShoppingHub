@@ -5,7 +5,7 @@ const bcrypt = require('bcrypt');
 class Register {
   signUp = async (req, res) => {
     try {
-      const { name, age, gender, email, password } = req.body;
+      const { name, age, gender, email, password, isAdmin } = req.body;
       if (!name) {
         throw {
           message: 'Please enter a name',
@@ -30,6 +30,8 @@ class Register {
         };
       }
 
+      const userRole = isAdmin ? 'Admin' : 'User';
+
       const findUser = await userDetails.find({ email });
 
       if (findUser.length > 0) {
@@ -44,6 +46,7 @@ class Register {
         gender,
         email,
         password: passwordHash,
+        userRole,
       });
       res.send({
         status: true,
@@ -52,6 +55,7 @@ class Register {
           age: response.age,
           gender: response.gender,
           email: response.email,
+          userRole: response.userRole,
           id: response._id,
         },
         message: 'Successfully Register!!',

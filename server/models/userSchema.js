@@ -6,7 +6,7 @@ var validateEmail = function (email) {
 };
 
 const user = new mongoose.Schema({
-  name: String,
+  name: { type: String },
   age: { type: String },
   gender: { type: String },
   email: {
