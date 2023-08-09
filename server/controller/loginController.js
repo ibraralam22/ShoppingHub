@@ -77,25 +77,6 @@ class Login {
       });
     }
   };
-
-  getUserOrder = async (req, res) => {
-    try {
-      const userId = req.query.userId;
-      const response = await userDetails
-        .find({ userId: userId })
-        .populate('userId');
-      res.send({
-        status: true,
-        response: response,
-        message: 'Successfully get user all Orders',
-      });
-    } catch (error) {
-      res.send({
-        status: false,
-        response: error.message,
-      });
-    }
-  };
 }
 
 module.exports = new Login();

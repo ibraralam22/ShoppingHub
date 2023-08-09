@@ -76,7 +76,7 @@ class Product {
     try {
       const response = await productDetails
         .find({ isDeleted: false })
-        .populate();
+        .populate('categoryId');
       res.send({
         status: true,
         response: response,
@@ -89,6 +89,25 @@ class Product {
       });
     }
   };
+
+  // getUserProducts = async (req, res) => {
+  //   try {
+  //     const userId = req.loggedData.id;
+  //     const response = await productDetails
+  //       .find({ userId: userId, isDeleted: false })
+  //       .populate('userId');
+  //     res.send({
+  //       status: true,
+  //       response: response,
+  //       message: 'Successfully get all Products',
+  //     });
+  //   } catch (error) {
+  //     res.send({
+  //       status: false,
+  //       response: error.message,
+  //     });
+  //   }
+  // };
 
   updateProduct = async (req, res) => {
     try {
