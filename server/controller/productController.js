@@ -49,6 +49,7 @@ class Product {
       }
 
       const cloudFile = await CloudinaryService.uploadImage(files[0]);
+      console.log("🚀 ~ file: productController.js:52 ~ Product ~ createProduct= ~ files:", files)
       await unlinkFile(files[0].path);
 
       const response = await productDetails.create({
